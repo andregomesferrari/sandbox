@@ -1,5 +1,6 @@
-resource "azurerm_network_interface" "sandbox" {
-  name                = "${var.name_prefix}-nic"
+resource "azurerm_network_interface" "sandbox_test" {
+  count = "${var.test_vm_count}"
+  name                = "${var.name_prefix}-test-nic-${count.index+1}"
   location            = "${var.location}"
   resource_group_name = "${var.resource_group}"
 
@@ -7,40 +8,41 @@ resource "azurerm_network_interface" "sandbox" {
     name                          = "ipconfig"
     subnet_id                     = "${var.subnet_id}"
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = "${var.pip_id}"
+    
   }
 }
 
-resource "azurerm_virtual_machine" "sandbox_linux" {
-  name                  = "${var.name_prefix}-linuxvm"
+resource "azurerm_virtual_machine" "sandbox_test" {
+  count = "${var.test_vm_count}"
+  name                  = "${var.name_prefix}-test-linuxvm-${count.index+1}"
   location              = "${var.location}"
   resource_group_name   = "${var.resource_group}"
-  network_interface_ids = ["${azurerm_network_interface.sandbox.id}"]
+  network_interface_ids = ["${element(azurerm_network_interface.sandbox_test.*.id, count.index+1)}"]
   vm_size               = "${var.vm_size}"
 
   storage_image_reference {
     publisher = "OpenLogic"
     offer     = "CentOS"
-    sku       = "7.5"
+    sku       = "6.7"
     version   = "latest"
   }
 
   storage_os_disk {
-    name          = "${var.name_prefix}-osdisk"
+    name          = "${var.name_prefix}-test-osdisk-${count.index+1}"
     caching       = "ReadWrite"
     create_option = "FromImage"
   }
 
   /* 
   storage_data_disk {
-    name          = "${local.resource_prefix}-datadisk"
+    name          = "${local.resource_prefix}-test-datadisk-${count.index+1}"
     create_option = "Empty"
     lun           = 0
     disk_size_gb  = "${var.vm_disk_size}"
   } */
 
   os_profile {
-    computer_name  = "AF-LINUXBOX1"
+    computer_name  = "AF-TEST-LINUX${count.index+1}"
     admin_username = "aferrari"
     admin_password = "Go@hell1079"
   }

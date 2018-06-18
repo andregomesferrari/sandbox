@@ -13,3 +13,8 @@ variable "subnet_id" {}
 variable "pip_id" {}
 
 variable "vm_size" {}
+
+variable "test_vm_count"{
+  description = "Number of test vms"
+  default = 3
+}

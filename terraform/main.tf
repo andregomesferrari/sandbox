@@ -14,4 +14,5 @@ module "linuxbox" {
   subnet_id   = "${module.sandbox_net.subnet_id}"
   pip_id      = "${module.sandbox_net.pip_id}"
   vm_size     = "Standard_B1ms"
+  test_vm_count = 3
 }
