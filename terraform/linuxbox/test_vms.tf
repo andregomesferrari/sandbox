@@ -33,6 +33,8 @@ resource "azurerm_virtual_machine" "sandbox_test" {
     create_option = "FromImage"
   }
 
+  delete_os_disk_on_termination = true
+
   /* 
   storage_data_disk {
     name          = "${local.resource_prefix}-test-datadisk-${count.index+1}"
@@ -46,7 +48,11 @@ resource "azurerm_virtual_machine" "sandbox_test" {
     admin_username = "aferrari"
     admin_password = "Go@hell1079"
   }
+
   os_profile_linux_config {
     disable_password_authentication = false
+    ssh_keys = [{ 
+        path = "/home/aferrari/.ssh/authorized_keys" 
+        key_data="${var.key_data}" }]
   }
 }

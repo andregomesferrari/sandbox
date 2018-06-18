@@ -1,3 +1,8 @@
+data "azurerm_key_vault_secret" "test" {
+  name = "test-key"
+  vault_uri = "https://af-keyvault.vault.azure.net/"
+}
+
 module "sandbox_net" {
   source = "./network"
 
@@ -15,4 +20,5 @@ module "linuxbox" {
   pip_id      = "${module.sandbox_net.pip_id}"
   vm_size     = "Standard_B1ms"
   test_vm_count = 3
+  key_data = "${data.azurerm_key_vault_secret.test.value}"
 }

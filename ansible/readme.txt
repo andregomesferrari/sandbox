@@ -10,3 +10,5 @@ export AZURE_SECRET=""
 export AZURE_SUBSCRIPTION_ID=""
 export AZURE_TENANT=""
 
+export AZURE_USE_PRIVATE_IP=1
+

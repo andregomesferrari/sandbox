@@ -18,3 +18,8 @@ variable "test_vm_count"{
   description = "Number of test vms"
   default = 3
 }
+
+variable "key_data" {
+  description = "ssh key data for access on the test vms"
+}
+
