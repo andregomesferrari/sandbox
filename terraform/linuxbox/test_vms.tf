@@ -1,22 +1,21 @@
 resource "azurerm_network_interface" "sandbox_test" {
-  count = "${var.test_vm_count}"
+  count               = "${var.test_vm_count}"
   name                = "${var.name_prefix}-test-nic-${count.index+1}"
   location            = "${var.location}"
-  resource_group_name = "${var.resource_group}"
+  resource_group_name = "prod-ecru"
 
   ip_configuration {
     name                          = "ipconfig"
     subnet_id                     = "${var.subnet_id}"
     private_ip_address_allocation = "Dynamic"
-    
   }
 }
 
 resource "azurerm_virtual_machine" "sandbox_test" {
-  count = "${var.test_vm_count}"
+  count                 = "${var.test_vm_count}"
   name                  = "${var.name_prefix}-test-linuxvm-${count.index+1}"
   location              = "${var.location}"
-  resource_group_name   = "${var.resource_group}"
+  resource_group_name   = "prod-ecru"
   network_interface_ids = ["${element(azurerm_network_interface.sandbox_test.*.id, count.index+1)}"]
   vm_size               = "${var.vm_size}"
 
@@ -48,11 +47,12 @@ resource "azurerm_virtual_machine" "sandbox_test" {
     admin_username = "aferrari"
     admin_password = "Go@hell1079"
   }
-
   os_profile_linux_config {
     disable_password_authentication = false
-    ssh_keys = [{ 
-        path = "/home/aferrari/.ssh/authorized_keys" 
-        key_data="${var.key_data}" }]
+
+    ssh_keys = [{
+      path     = "/home/aferrari/.ssh/authorized_keys"
+      key_data = "${var.key_data}"
+    }]
   }
 }
