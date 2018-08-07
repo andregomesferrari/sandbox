@@ -1,0 +1,37 @@
+##TODO: Verify the need of this task in case we use the AD server
+---
+- name: create sudoers group
+  group:
+      name: '{{sudoers_group}}'
+      state: present 
+  tags: create_users    
+     
+- name: remove group wheel
+  group:
+      name: wheel 
+      state: absent 
+  tags: create_users 
+
+- name: Allow group to sudo
+  template: 
+    src: sudoers.j2
+    dest: /etc/sudoers.d/sudoers
+    validate: 'visudo -cf %s'
+    mode: 0440
+  tags: create_users 
+
+- name: create admin users
+  loop: "{{admin_users}}"
+  register: userout
+  user:
+      name: "{{item}}"
+      groups: "{{sudoers_group}}"
+      password: "{{temp_password | password_hash('sha512')}}"
+      update_password: on_create
+  tags: create_users     
+
+- name: Expire Passwords
+  loop: "{{userout.results}}"
+  shell: 'chage -d 0 {{item.name}}​​​​​'
+  when: item.changed
+  tags: create_users 
